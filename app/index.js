@@ -9,8 +9,6 @@ var server = http.createServer(app);
 
 var io = require('socket.io').listen(server);  //pass a http.Server instance
 server.listen(8080);  
-
-console.log("asdasd",__dirname)
 // app.use(express.static('client'));
 app.use('/lib',express.static(__dirname+'/../public/bower_components/'));
 

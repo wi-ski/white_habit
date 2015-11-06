@@ -84,9 +84,14 @@ module.exports = function(grunt) {
         tasks: ['cssmin']
       }
     },
-    // shell: {
-    //   prodServer: {
-    //     command: 'git add -A && git commit -m "production time" && git push azure'
+    shell: {
+        options: {
+            stderr: true
+        },
+        target: {
+            command: 'npm install && bower install'
+        }
+    },
     gitadd: {
       task: {
         options: {
@@ -141,6 +146,11 @@ module.exports = function(grunt) {
 
   grunt.registerTask('test', [
     'mochaTest'
+  ]);
+
+
+  grunt.registerTask('initproject', [
+    'shell'
   ]);
 
   grunt.registerTask('devbuild', [
