@@ -1,0 +1,21 @@
+.DS_Store
+.AppleDouble
+.LSOverride
+
+iisnode.yml
+
+bower_components
+node_modules
+public/dist
+
+# Icon must ends with two \r.
+Icon
+
+
+
+
+# Floobits
+.floo
+.floobit
+.floo
+.flooignore
