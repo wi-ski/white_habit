@@ -3,19 +3,8 @@ module.exports = function(grunt) {
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
     concat: {
-      'public/theWholeLib.js': [  'public/lib/underscore.js',
-                                  'public/lib/jquery.js',
-                                  'public/lib/backbone.js',
-                                  'public/lib/handlebars.js'
-                                ],
-      'public/theWholeClient.js':['public/client/app.js',
-                                  'public/client/router.js',
-                                  'public/client/link.js',
-                                  'public/client/links.js',
-                                  'public/client/linkView.js',
-                                  'public/client/linksView.js',
-                                  'public/client/createLinkView.js'
-                                  ]
+      'public/theWholeLib.js': [  'public/bower_components/*'],
+      'public/theWholeClient.js':['public/client/*.js']
     },
     mochaTest: {
       test: {
@@ -43,9 +32,7 @@ module.exports = function(grunt) {
     jshint: {
       files: [
       'server.js',
-      'server-config.js',
-      'app/*.js',
-      'app/**/*.js'
+
       ],
       options: {
         force: 'true',
