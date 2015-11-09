@@ -1,36 +1,4 @@
-
-var http = require('http');
-var path = require('path');
-var express = require('express');
-var io = require('socket.io')
-
-
-var app = express();
-var server = http.createServer(app);
-
-io = io.listen(server);
-var socketsHandler = require("./modules/socketHandler.js"); // need to detangle dependencies..
-
-
-var settings = {
-
-  port:8080,
-  address:"127.0.0.0"
-
-}
-
-server.listen(settings.port);  
-
-app.use('/lib',express.static(__dirname+'/../public/bower_components/'));
-app.use('/client',express.static(__dirname+'/../public/client/scripts/'));
-
-app.get('/', function (req, res) {
-  res.sendFile(path.resolve(__dirname + '/../public/client/index.html'));
-  // res.sendFile(path.resolve(__dirname + '/../public/client/index.html'));
-});
-
-
-io.sockets.on('connection', function (socket) {
+module.exports = function (socket) {
   // users which are currently connected to the chat
   var users = {};
 
@@ -84,20 +52,4 @@ io.sockets.on('connection', function (socket) {
     socket.broadcast.emit('updatechat', 'SERVER', socket.username + ' has disconnected');
     socket.leave(socket.room);
   });
-})
-
-
-console.log("Server listening at port: ",settings.port," Probably localhost...")
-
-
-
-
-
-
-
-
-
-
-
-
-
+}

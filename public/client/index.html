@@ -1,19 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
 
-<script src="/socket.io/socket.io.js"></script>
-<script src="lib/underscore/underscore.js"></script>
-<script src="lib/jquery/dist/jquery.js"></script>
-<script src="lib/backbone/backbone.js"></script>
+  <link href="lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css">
 
-<script src="client/scripts/app.js">
- 
+<body>
+	<nav class="navbar navbar-inverse" role="navigation">
+	  <div class="container">
+	    <div class="navbar-header">
+	      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+	        <span class="sr-only">Toggle navigation</span>
+	        <span class="icon-bar"></span>
+	        <span class="icon-bar"></span>
+	        <span class="icon-bar"></span>
+	      </button>
+	      <a class="navbar-brand" href="#">HTTPS | The Fun Way</a>
+	    </div>
+	    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+	    </div>
+	  </div>
+	</nav>
 
-</script>
-<div style="float:left;width:100px;border-right:1px solid black;height:300px;padding:10px;overflow:scroll-y;">
-  <b>ROOMS</b>
-  <div id="rooms"></div>
-</div>
-<div style="float:left;width:300px;height:250px;overflow:scroll-y;padding:10px;">
-  <div id="conversation"></div>
-  <input id="data" style="width:200px;" />
-  <input type="button" id="datasend" value="send" />
-</div>
+
+
+
+	
+	<div class="col-md-3">
+		<div class="form-group">
+		  <label for="privateKeyDisplay">Private Key</label>
+	      <textarea id="privKeyDisplay" class="form-control custom-control" rows="3" style="resize:none" placeholder="Should be a private key..."></textarea>
+	      <span class="input-group-addon btn btn-primary">                                                
+				  Confirm
+	      </span>
+		</div>
+
+		<div class="form-group">
+		  <label for="publicKeyDisplay">Public Key</label>
+	      <textarea id="pubKeyDisplay" class="form-control custom-control" rows="3" style="resize:none" placeholder="Should be a public key..."></textarea>
+	      <span class="input-group-addon btn btn-primary">                                                
+				  Confirm
+	      </span>
+		</div>
+		<div id="generateKeys" class="text-center">
+			<button id="generate" class="btn btn-primary">Generate New Keys</button>
+		</div>
+
+
+
+
+
+		<div class="form-group">
+		  <label for="publicKeyDisplay">Enter Message</label>
+	      <textarea id="testMessage" class="form-control custom-control" rows="3" style="resize:none" placeholder="Enter Your Message..."></textarea>
+		</div>
+		<div class="text-center">
+			<button id="sendTestMessage" class="btn btn-primary">Send</button>
+		</div>
+
+	</div>
+	<div class="col-md-6">
+		<blockquote>
+		  <p class="messageContent">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat a ante.</p>
+		  <footer>CurrentUser! <cite title="Source Title">Public key...</cite></footer>
+		</blockquote>
+
+		<blockquote class="blockquote-reverse">
+			<p class="messageContent">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat a ante.</p>
+			<footer>Username2! <cite title="Source Title">Public key...</cite></footer>
+		</blockquote>
+
+	</div>
+
+	<div class="col-md-3">
+
+		
+	</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="lib/underscore/underscore.js"></script>
+    <script src="lib/jquery/dist/jquery.js"></script>
+    <script src="lib/backbone/backbone.js"></script>
+    <script src="lib/bootstrap/dist/js/bootstrap.js"></script>
+    <script src="client/app.js"></script>
+    <script src="client/jsencrypt.js"></script>
+
+		<script>
+		$(document).ready(function(){
+			var encrypt =  new JSEncrypt();
+			var decrypt = new JSEncrypt();
+
+			$("#generateKeys").click(function(){
+				var privKey = encrypt.getPrivateKeyB64();
+				var pubKey = encrypt.getPublicKeyB64();
+				$("#pubKeyDisplay").val(pubKey);
+				$("#privKeyDisplay").val(privKey);
+			})
+			
+			$("#sendTestMessage").click(function(){
+
+				encrypt.setPublicKey($("#pubKeyDisplay").val());
+				var messageToEncypt = $("#testMessage").val();
+
+				var encryptedMessage = encrypt.encrypt(messageToEncypt);
+				console.log("ENCRYPTED MESSAGE: ",encryptedMessage)
+
+				decrypt.setPrivateKey($("#privKeyDisplay").val());
+				var decryptedMessage = decrypt.decrypt(encryptedMessage);
+
+				console.log(decryptedMessage)
+				$("#testMessageRecieve").text(decryptedMessage);
+
+
+			})
+
+
+		})
+
+
+
+
+
+
+		// $(document).ready(function(){
+		// 	var socket = io.connect("127.0.0.0:8080");
+		// 	$("#chat").hide();
+		// 	$("#name").focus();
+		// 	$("form").submit(function(event){
+	 //    		event.preventDefault();
+		// 	});
+
+		// 	$("#join").click(function(){
+		// 		var name = $("#name").val();
+		// 		if (name != "") {
+		// 			socket.emit("join", name);
+		// 			$("#login").detach();
+		// 			$("#chat").show();
+		// 			$("#msg").focus();
+		// 			ready = true;
+		// 		}
+		// 	});
+
+		// 	$("#name").keypress(function(e){
+		// 		if(e.which == 13) {
+		// 			var name = $("#name").val();
+		// 			if (name != "") {
+		// 				socket.emit("join", name);
+		// 				ready = true;
+		// 				$("#login").detach();
+		// 				$("#chat").show();
+		// 				$("#msg").focus();
+		// 			}
+		// 		}
+		// 	});
+
+		// 	socket.on("update", function(msg) {
+		// 		if(ready)
+		// 			$("#msgs").append("<li>" + msg + "</li>");
+		// 	})
+
+		// 	socket.on("update-people", function(people){
+		// 		if(ready) {
+		// 			$("#people").empty();
+		// 			$.each(people, function(clientid, name) {
+		// 				$('#people').append("<li>" + name + "</li>");
+		// 			});
+		// 		}
+		// 	});
+
+		// 	socket.on("chat", function(who, msg){
+		// 		if(ready) {
+		// 			$("#msgs").append("<li><strong><span class='text-success'>" + who + "</span></strong> says: " + msg + "</li>");
+		// 		}
+		// 	});
+
+		// 	socket.on("disconnect", function(){
+		// 		$("#msgs").append("<li><strong><span class='text-warning'>The server is not available</span></strong></li>");
+		// 		$("#msg").attr("disabled", "disabled");
+		// 		$("#send").attr("disabled", "disabled");
+		// 	});
+
+
+		// 	$("#send").click(function(){
+		// 		var msg = $("#msg").val();
+		// 		socket.emit("send", msg);
+		// 		$("#msg").val("");
+		// 	});
+
+		// 	$("#msg").keypress(function(e){
+		// 		if(e.which == 13) {
+		// 			var msg = $("#msg").val();
+		// 			socket.emit("send", msg);
+		// 			$("#msg").val("");
+		// 		}
+		// 	});
+
+		// });
+	</script>
+</html>
