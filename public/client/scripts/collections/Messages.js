@@ -1,6 +1,6 @@
 var Messages = Backbone.Collection.extend({
 
-  model: PublicKey,
+  model: Message,
 
   url:"http://localhost:3000/test.json",
 

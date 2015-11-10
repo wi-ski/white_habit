@@ -26,12 +26,31 @@
     });
   });
 
+  socket.on('receieveCertificate',function(certificate){
+    console.log(certificate);
+
+    var cert = new Certificate(certificate);
+    new CertificateView({model:cert});
+  });
+
+
+  function submitKeyForSigning(pubKey){
+    console.log("Submitting pub key for singing...")
+    socket.emit('signMyKey',pubKey);
+  }
+
   function switchRoom(room){
     socket.emit('switchRoom', room);
   }
 
   // on load of page
   $(function(){
+
+    $("#genCertificate").click(function(){
+      console.log("Gen button clicked...");
+      var pubKey = $('#pubKeyDisplay').val();
+      submitKeyForSigning(pubKey);
+    })
     // when the client clicks SEND
     $('#datasend').click( function() {
       var message = $('#data').val();

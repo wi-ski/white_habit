@@ -8,12 +8,6 @@
 	<nav class="navbar navbar-inverse" role="navigation">
 	  <div class="container">
 	    <div class="navbar-header">
-	      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-	        <span class="sr-only">Toggle navigation</span>
-	        <span class="icon-bar"></span>
-	        <span class="icon-bar"></span>
-	        <span class="icon-bar"></span>
-	      </button>
 	      <a class="navbar-brand" href="#">HTTPS | The Fun Way</a>
 	    </div>
 	    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
@@ -22,10 +16,7 @@
 	</nav>
 
 
-
-
-	
-	<div class="col-md-3">
+	<div class="col-md-3" >
 		<div class="form-group">
 		  <label for="privateKeyDisplay">Private Key</label>
 	      <textarea id="privKeyDisplay" class="form-control custom-control" rows="3" style="resize:none" placeholder="Should be a private key..."></textarea>
@@ -46,19 +37,29 @@
 		</div>
 
 
+    <hr>
 
+    <div class="form-group">
 
-
-		<div class="form-group">
-		  <label for="publicKeyDisplay">Enter Message</label>
-	      <textarea id="testMessage" class="form-control custom-control" rows="3" style="resize:none" placeholder="Enter Your Message..."></textarea>
-		</div>
-		<div class="text-center">
-			<button id="sendTestMessage" class="btn btn-primary">Send</button>
-		</div>
+  		<div class="text-center">
+        <button id="genCertificate" class="btn btn-primary">Generate Certificate</button>
+  			<button id="sendTestMessage" class="btn btn-primary">TEST</button>
+  		</div>
+      <label >Certificate</label>
+      <div id="certDisplay">
+        
+      </div>
+    </div>
 
 	</div>
-	<div class="col-md-6">
+	<div id="messagesContainer" class="col-md-6">
+
+
+
+
+
+
+
 		<blockquote>
 		  <p class="messageContent">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat a ante.</p>
 		  <footer>CurrentUser! <cite title="Source Title">Public key...</cite></footer>
@@ -71,8 +72,29 @@
 
 	</div>
 
-	<div class="col-md-3">
-
+	<div class="col-md-3 usersList">
+		<ul class="list-group">
+		  <li class="list-group-item">
+		  	<span class="label label-success label-as-badge">Session</span>
+		  	Test Username
+		  </li>
+		  <li class="list-group-item">
+		  	<span class="label label-success label-as-badge">Session</span>
+		  	Test Username
+		  </li>
+		  <li class="list-group-item">
+		  	<span class="label label-default label-as-badge">No Session</span>
+		  	Test Username
+		  </li>
+		  <li class="list-group-item">
+		  	<span class="label label-default label-as-badge">No Session</span>
+		  	Test Username
+		  </li>
+		  <li class="list-group-item">
+		  	<span class="label label-success label-as-badge">Session</span>
+		  	Test Username
+		  </li>
+		</ul>
 		
 	</div>
 
@@ -104,8 +126,33 @@
     <script src="lib/jquery/dist/jquery.js"></script>
     <script src="lib/backbone/backbone.js"></script>
     <script src="lib/bootstrap/dist/js/bootstrap.js"></script>
-    <script src="client/app.js"></script>
+
+
+
+
+
+    <script src="client/models/App.js"></script>
+    <script src="client/models/Certificate.js"></script>
+    <script src="client/models/Message.js"></script>
+    <script src="client/models/PublicKey.js"></script>
+    <script src="client/models/User.js"></script>
+    <script src="client/collections/Messages.js"></script>
+    <script src="client/collections/PublicKeys.js"></script>
+    <script src="client/collections/Users.js"></script>
+    <script src="client/views/AppView.js"></script>
+    <script src="client/views/CertificateView.js"></script>
+    <script src="client/views/MessagesView.js"></script>
+    <script src="client/views/MessageView.js"></script>
+    <script src="client/views/PublicKeyView.js"></script>
+    <script src="client/views/UsersView.js"></script>
+    <script src="client/views/UserView.js"></script>
+
+
+
+
     <script src="client/jsencrypt.js"></script>
+    <script src="client/sha256.js"></script>
+    <script src="client/app.js"></script>
 
 		<script>
 		$(document).ready(function(){
@@ -113,16 +160,24 @@
 			var decrypt = new JSEncrypt();
 
 			$("#generateKeys").click(function(){
-				var privKey = encrypt.getPrivateKeyB64();
-				var pubKey = encrypt.getPublicKeyB64();
+        var pubKey = encrypt.getPublicKeyB64();
+        var privKey = encrypt.getPrivateKeyB64();
 				$("#pubKeyDisplay").val(pubKey);
 				$("#privKeyDisplay").val(privKey);
 			})
-			
+		
+
+
+
+
+
+
+
 			$("#sendTestMessage").click(function(){
 
 				encrypt.setPublicKey($("#pubKeyDisplay").val());
-				var messageToEncypt = $("#testMessage").val();
+        var messageToEncypt = "TESTTESTSETSETSET";
+				// var messageToEncypt = $("#testMessage").val();
 
 				var encryptedMessage = encrypt.encrypt(messageToEncypt);
 				console.log("ENCRYPTED MESSAGE: ",encryptedMessage)
