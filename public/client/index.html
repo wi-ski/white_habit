@@ -160,12 +160,18 @@
 			var decrypt = new JSEncrypt();
 
 			$("#generateKeys").click(function(){
-        var pubKey = encrypt.getPublicKeyB64();
-        var privKey = encrypt.getPrivateKeyB64();
+        var pubKey = encrypt.getPublicKey();
+        var privKey = encrypt.getPrivateKey();
 				$("#pubKeyDisplay").val(pubKey);
 				$("#privKeyDisplay").val(privKey);
 			})
 		
+
+
+
+
+
+
 
 
 
