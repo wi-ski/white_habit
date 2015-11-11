@@ -2,8 +2,8 @@ function usersCollection(){
   this.numUsers=0;
   this.storage = {};
   this.push = function(obj){
-    if(!obj.username || !obj.publicKey){
-      return { err:"Malformed user object missing: " + (obj.username ? "Public Key" : "Username") }
+    if(!obj.username || !obj.publicKey || !obj.socketId || !obj.socket){
+      return { err:"Malformed user object missing some attr" }
     }
     numUsers++;
     if(this.storage[obj.username]){

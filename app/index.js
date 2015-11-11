@@ -22,22 +22,16 @@ var settings = {
 server.listen(settings.port);  
 
 app.use('/lib',express.static(__dirname+'/../public/bower_components/'));
-app.use('/client',express.static(__dirname+'/../public/client/scripts/'));
+app.use('/client',express.static(__dirname+'/../public/client/'));
 
 app.get('/', function (req, res) {
   res.sendFile(path.resolve(__dirname + '/../public/client/index.html'));
 });
 
-
-  // users which are currently connected to the chat
-  var users = new usersCollection();
-
-  // rooms which are currently available in chat
-  var rooms = new roomsCollection();
-  // var rooms = ['room1','room2','room3'];
+  var usersCollection = new usersCollection(); // might not use
+  var roomsCollection = new roomsCollection();
 
 io.sockets.on('connection', function (socket) {
-
 
   socket.on('signMyKey',function(publicKey){
 
@@ -45,54 +39,64 @@ io.sockets.on('connection', function (socket) {
     socket.emit("receieveCertificate",certificate);
 
   });
+  socket.on('send',function(messageObj){
+    console.log("SEND TRIGGED",messageObj)
+    io.sockets.emit('message', messageObj);
 
+  })
+  socket.on("acceptSession",function(acceptObj){
+    var emSocket = usersCollection.storage[acceptObj.username].socket
+    emSocket.emit("SessionAccept",acceptObj)
 
-  // when the client emits 'adduser', this listens and executes
-  socket.on('adduser', function(user){
-    // store the username in the socket session for this client
-    socket.username = user.username;
-    // store the room name in the socket session for this client
-    socket.room = 'room1';
-    // add the client's username to the global list
-    users[user.username] = {username:user.name};
-    // send client to room 1
-    socket.join('room1');
-    // echo to client they've connected
-    socket.emit('updatechat', 'SERVER', 'you have connected to room1');
-    // echo to room 1 that a person has connected to their room
-    socket.broadcast.to('room1').emit('updatechat', 'SERVER', user.username + ' has connected to this room');
-    socket.emit('updaterooms', rooms, 'room1');
+  });
+  
+  socket.on('requestSession',function(userAttrObj){
+
+    console.log("REQUEST SESSION TRIGGED",userAttrObj);
+
+    var emSocket = usersCollection.storage[userAttrObj.username].socket
+    emSocket.emit("incomingSessionReq",userAttrObj)
   });
 
-  // when the client emits 'sendchat', this listens and executes
-  socket.on('sendchat', function (data) {
-    // we tell the client to execute 'updatechat' with 2 parameters
-    io.sockets.in(socket.room).emit('updatechat', socket.username, data);
+  socket.on('requestUsers',function(){
+    var testUsersCollection = [];
+    var storage = usersCollection.storage;
+    for(var key in storage){
+      testUsersCollection.push({username:key,publicKey:storage[key].publicKey})
+    }
+    socket.emit("receiveUsers",testUsersCollection);
   });
 
-  socket.on('switchRoom', function(newroom){
-    // leave the current room (stored in session)
-    socket.leave(socket.room);
-    // join new room, received as function parameter
-    socket.join(newroom);
-    socket.emit('updatechat', 'SERVER', 'you have connected to '+ newroom);
-    // sent message to OLD room
-    socket.broadcast.to(socket.room).emit('updatechat', 'SERVER', socket.username+' has left this room');
-    // update socket session room title
-    socket.room = newroom;
-    socket.broadcast.to(newroom).emit('updatechat', 'SERVER', socket.username+' has joined this room');
-    socket.emit('updaterooms', rooms, newroom);
+  socket.on('newMessage',function(messageObj){
+    var testMessage = {destination_user:'billy',message:"This is a test message"}
+    var dest_socket = usersCollection.storage[messageObj.destination_user].socket;
+    if(!dest_socket){
+      socket.emit({error:"User doesnt exist"});
+    }else{
+      dest_socket.emit("recieveMessage",messageObj);
+    }
   });
 
-  // when the user disconnects.. perform this
+  socket.on('genNewUser', function(userObj){
+    console.log("GEN USER FIRED : ",userObj)
+    socket.username = userObj.username;
+    if(usersCollection.storage[userObj.username]){
+      socket.emit({err:"Username taken"})
+    }else{ //everything be so ghetto.
+      usersCollection.storage[userObj.username]={};
+      usersCollection.storage[userObj.username].publicKey=userObj.publicKey;
+      usersCollection.storage[userObj.username].socket=socket;
+      socket.emit("userCreateSuccess",userObj);
+      socket.broadcast.emit("newUserAdded",userObj);
+    }
+  });
+
   socket.on('disconnect', function(){
-    // remove the username from global users list
-    delete users[socket.username];
-    // update list of users in chat, client-side
-    io.sockets.emit('updateusers', users);
-    // echo globally that this client has left
-    socket.broadcast.emit('updatechat', 'SERVER', socket.username + ' has disconnected');
-    socket.leave(socket.room);
+    console.log("DISCONNECT FIRED",socket.username)
+    delete usersCollection.storage[socket.username];
+    console.log(usersCollection.storage)
+    socket.broadcast.emit('userDisconnect',socket.username);
+
   });
 })
 

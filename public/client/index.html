@@ -3,6 +3,7 @@
 <head>
 
   <link href="lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+  <link href="client/css/styles.css" rel="stylesheet" type="text/css">
 
 <body>
 	<nav class="navbar navbar-inverse" role="navigation">
@@ -33,9 +34,15 @@
 	      </span>
 		</div>
 		<div id="generateKeys" class="text-center">
-			<button id="generate" class="btn btn-primary">Generate New Keys</button>
+			<button id="generate" class="btn btn-primary">Generate Keys</button>
+			|
+			<button id="newUserGenerate" class="btn btn-primary">Generate User</button>
 		</div>
 
+		<div id="localUserView" class="form-group">
+		  <label for="usernameInput">Username</label>
+	      <input id="usernameInput" class="form-control custom-control" placeholder="Username..."></input>
+		</div>
 
     <hr>
 
@@ -43,7 +50,7 @@
 
   		<div class="text-center">
         <button id="genCertificate" class="btn btn-primary">Generate Certificate</button>
-  			<button id="sendTestMessage" class="btn btn-primary">TEST</button>
+  			<!-- <button id="sendTestMessage" class="btn btn-primary">TEST</button> -->
   		</div>
       <label >Certificate</label>
       <div id="certDisplay">
@@ -53,12 +60,6 @@
 
 	</div>
 	<div id="messagesContainer" class="col-md-6">
-
-
-
-
-
-
 
 		<blockquote>
 		  <p class="messageContent">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat a ante.</p>
@@ -73,89 +74,233 @@
 	</div>
 
 	<div class="col-md-3 usersList">
-		<ul class="list-group">
-		  <li class="list-group-item">
-		  	<span class="label label-success label-as-badge">Session</span>
-		  	Test Username
-		  </li>
-		  <li class="list-group-item">
-		  	<span class="label label-success label-as-badge">Session</span>
-		  	Test Username
-		  </li>
-		  <li class="list-group-item">
-		  	<span class="label label-default label-as-badge">No Session</span>
-		  	Test Username
-		  </li>
-		  <li class="list-group-item">
-		  	<span class="label label-default label-as-badge">No Session</span>
-		  	Test Username
-		  </li>
-		  <li class="list-group-item">
-		  	<span class="label label-success label-as-badge">Session</span>
-		  	Test Username
-		  </li>
+		<ul class="list-group usersView">
 		</ul>
-		
+
+		  <div class="form-group">
+		  <input id="msg" class="form-control custom-control" placeholder="Your message..."></input>
+		  </div>
 	</div>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 </body>
+<script src="http://crypto-js.googlecode.com/svn/tags/3.1.2/build/components/core-min.js"></script>
+<script src="http://crypto-js.googlecode.com/svn/tags/3.1.2/build/components/enc-utf16-min.js"></script>
+<script src="http://crypto-js.googlecode.com/svn/tags/3.1.2/build/components/enc-base64-min.js"></script>
+<script src="http://crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/aes.js"></script>
+
     <script src="/socket.io/socket.io.js"></script>
     <script src="lib/underscore/underscore.js"></script>
     <script src="lib/jquery/dist/jquery.js"></script>
     <script src="lib/backbone/backbone.js"></script>
     <script src="lib/bootstrap/dist/js/bootstrap.js"></script>
+    <script src="client/scripts/models/App.js"></script>
+    <script src="client/scripts/models/Certificate.js"></script>
+    <script src="client/scripts/models/Message.js"></script>
+    <script src="client/scripts/models/PublicKey.js"></script>
+    <script src="client/scripts/models/User.js"></script>
+    <script src="client/scripts/models/LocalUser.js"></script>
+    <script src="client/scripts/collections/Messages.js"></script>
+    <script src="client/scripts/collections/PublicKeys.js"></script>
+    <script src="client/scripts/collections/Users.js"></script>
+    <script src="client/scripts/views/AppView.js"></script>
+    <script src="client/scripts/views/CertificateView.js"></script>
+    <script src="client/scripts/views/MessagesView.js"></script>
+    <script src="client/scripts/views/MessageView.js"></script>
+    <script src="client/scripts/views/PublicKeyView.js"></script>
+    <script src="client/scripts/views/UserView.js"></script>
+    <script src="client/scripts/views/UsersView.js"></script>
+    <script src="client/scripts/views/LocalUserView.js"></script>
 
 
-
-
-
-    <script src="client/models/App.js"></script>
-    <script src="client/models/Certificate.js"></script>
-    <script src="client/models/Message.js"></script>
-    <script src="client/models/PublicKey.js"></script>
-    <script src="client/models/User.js"></script>
-    <script src="client/collections/Messages.js"></script>
-    <script src="client/collections/PublicKeys.js"></script>
-    <script src="client/collections/Users.js"></script>
-    <script src="client/views/AppView.js"></script>
-    <script src="client/views/CertificateView.js"></script>
-    <script src="client/views/MessagesView.js"></script>
-    <script src="client/views/MessageView.js"></script>
-    <script src="client/views/PublicKeyView.js"></script>
-    <script src="client/views/UsersView.js"></script>
-    <script src="client/views/UserView.js"></script>
-
-
-
-
-    <script src="client/jsencrypt.js"></script>
-    <script src="client/sha256.js"></script>
-    <script src="client/app.js"></script>
+    <script src="client/scripts/jsencrypt.js"></script>
+    <script src="client/scripts/jsrsasign-latest-all-min.js"></script>
+    <script src="client/scripts/sha256.js"></script>
+    <script src="client/scripts/app.js"></script>
 
 		<script>
+
 		$(document).ready(function(){
+		
+
+
+
+
+			var JsonFormatter = {
+			        stringify: function (cipherParams) {
+			            // create json object with ciphertext
+			            var jsonObj = {
+			                ct: cipherParams.ciphertext.toString(CryptoJS.enc.Base64)
+			            };
+
+			            // optionally add iv and salt
+			            if (cipherParams.iv) {
+			                jsonObj.iv = cipherParams.iv.toString();
+			            }
+			            if (cipherParams.salt) {
+			                jsonObj.s = cipherParams.salt.toString();
+			            }
+
+			            // stringify json object
+
+			            return JSON.stringify(jsonObj);
+			        },
+
+			        parse: function (jsonStr) {
+			            // parse json string
+			            var jsonObj = JSON.parse(jsonStr);
+
+			            // extract ciphertext from json object, and create cipher params object
+			            var cipherParams = CryptoJS.lib.CipherParams.create({
+			                ciphertext: CryptoJS.enc.Base64.parse(jsonObj.ct)
+			            });
+
+			            // optionally extract iv and salt
+			            if (jsonObj.iv) {
+			                cipherParams.iv = CryptoJS.enc.Hex.parse(jsonObj.iv)
+			            }
+			            if (jsonObj.s) {
+			                cipherParams.salt = CryptoJS.enc.Hex.parse(jsonObj.s)
+			            }
+
+			            return cipherParams;
+			        }
+			    };
+
+
+			    // alert(encrypted); // {"ct":"tZ4MsEnfbcDOwqau68aOrQ==","iv":"8a8c8fd8fe33743d3638737ea4a00698","s":"ba06373c8f57179c"}
+
+			    
+
+			    // alert(decrypted.toString(CryptoJS.enc.Utf8)); // Message
+
+
+
+
+
+
+
+
+
+
+			var socket = io.connect('http://localhost:8080');
+			var App = new AppModel();
+			var newAppView = new AppView({model:App,socket:socket});
+			window.symmPassphrase ="";
+
+			 socket.on('connect', function(){
+			 		//recurring stuff?
+			 });
+
+			 socket.emit('requestUsers');
+			 socket.on('receiveUsers',function(usersSet){
+			   if(!usersSet){
+			     console.log("Problem connecting to socket/server...users");
+			   }else{
+			   	var coll = App.get("UsersCollection");
+			     for(var userObj in usersSet){
+			       	coll.add(new User(usersSet[userObj]));
+			     }
+			   }
+			 });
+			 socket.on("incomingSessionReq",function(userAttr){
+			 	// console.log("INCOMING SESSION REQ",userAttr);
+			 	// var decrypt = new JSEncrypt();
+			 	// decrypt.setPrivateKey($("#privKeyDisplay").val())
+			 	// var decryptedPassword = decrypt.decrypt(userAttr.pubKey);
+			 	// console.log("Decrypted Password",decryptedPassword)
+
+			 	// 	window.symmPassphrase = decryptedPassword;
+			  //   var encrypted = '' + CryptoJS.AES.encrypt("Hey i encrypted stuff with your password!!!", decryptedPassword);
+			  //   console.log("ENCRYPTED:", encrypted)
+
+			 	// 	var name = App.get('localUser').attributes.username;
+			 	// 	respond(name,encrypted);
+			 	
+			 });
+
+			 function respond(name,encrypted){
+
+			 		console.log("Respond Called",encrypted)
+
+			 		socket.emit("acceptSession",{username:name,message:encrypted})
+
+			 }
+
+			 	$("#msg").keypress(function(e){
+					if(e.which == 13) {
+						var msg = $("#msg").val();
+						var msg ={username:App.get('localUser').attributes.username,message:msg}
+						console.log("MESSAGE!!!",msg )
+						socket.emit("send", msg);
+						$("#msg").val("");
+					}
+				})
+
+				socket.on("message",function(messageObj){
+					console.log("MESSAGE RECEIVED FROM SERVER",messageObj)
+					App.get("MessagesCollection").add(new Message(messageObj));
+				})
+
+
+
+
+
+
+
+
+			socket.on("SessionAccept",function(acceptObj){
+				window.symmPassphrase = window.pendingSymmPassword
+				console.log("ACCCEPT OBJ ",acceptObj)
+				// var decrypted = CryptoJS.AES.decrypt(encrypted, window.symmPassphrase, { format: JsonFormatter });
+				// var decrypted = CryptoJS.AES.decrypt(acceptObj.message, window.pendingSymmPassword).toString(CryptoJS.enc.Utf8);
+
+
+				console.log("Decrypted: ",decrypted)
+
+			})
+
+			socket.on("userDisconnect",function(username){
+				var coll = App.get("UsersCollection");
+				var destModel = coll.where({username:username})[0];
+				coll.remove(destModel);
+			});
+
+		  socket.on('receiveMessage',function(messageObj){
+		    if(!messageObj){
+		      console.log("Problem connecting to socket/server...messageObj")
+		    }else{
+		      for(var messageObj in messageObj){
+		       	App.get("MessagesCollection").add(new Message(messageObj))
+		      }
+		    }
+		  });
+
+		  socket.on("userCreateSuccess",function(newLocalUserObj){
+		  	App.set("localUser",new LocalUser(newLocalUserObj));
+		  	window.local = newLocalUserObj.username
+		  	newAppView.localUserView = new LocalUserView({model: App.get("localUser")});
+		  });
+
+		  socket.on("newUserAdded",function(userObj){
+		  	console.log("New uuser added triggerd",userObj);
+		  	App.get("UsersCollection").add(new User(userObj));
+		  });
+
+
+		  $("#newUserGenerate").click(function(){
+		  	var pubKey = $("#pubKeyDisplay").val();
+		  	var userName = $("#usernameInput").val();
+		  	if(!pubKey || !userName){
+		  		alert("Provide a username and public key")
+		  	}else{
+		  		socket.emit('genNewUser',{username:userName,publicKey:pubKey});
+		  	}
+		  });
+
+
+
+
+
 			var encrypt =  new JSEncrypt();
 			var decrypt = new JSEncrypt();
 
@@ -165,17 +310,6 @@
 				$("#pubKeyDisplay").val(pubKey);
 				$("#privKeyDisplay").val(privKey);
 			})
-		
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -183,7 +317,6 @@
 
 				encrypt.setPublicKey($("#pubKeyDisplay").val());
         var messageToEncypt = "TESTTESTSETSETSET";
-				// var messageToEncypt = $("#testMessage").val();
 
 				var encryptedMessage = encrypt.encrypt(messageToEncypt);
 				console.log("ENCRYPTED MESSAGE: ",encryptedMessage)
@@ -197,87 +330,7 @@
 
 			})
 
-
 		})
 
-
-
-
-
-
-		// $(document).ready(function(){
-		// 	var socket = io.connect("127.0.0.0:8080");
-		// 	$("#chat").hide();
-		// 	$("#name").focus();
-		// 	$("form").submit(function(event){
-	 //    		event.preventDefault();
-		// 	});
-
-		// 	$("#join").click(function(){
-		// 		var name = $("#name").val();
-		// 		if (name != "") {
-		// 			socket.emit("join", name);
-		// 			$("#login").detach();
-		// 			$("#chat").show();
-		// 			$("#msg").focus();
-		// 			ready = true;
-		// 		}
-		// 	});
-
-		// 	$("#name").keypress(function(e){
-		// 		if(e.which == 13) {
-		// 			var name = $("#name").val();
-		// 			if (name != "") {
-		// 				socket.emit("join", name);
-		// 				ready = true;
-		// 				$("#login").detach();
-		// 				$("#chat").show();
-		// 				$("#msg").focus();
-		// 			}
-		// 		}
-		// 	});
-
-		// 	socket.on("update", function(msg) {
-		// 		if(ready)
-		// 			$("#msgs").append("<li>" + msg + "</li>");
-		// 	})
-
-		// 	socket.on("update-people", function(people){
-		// 		if(ready) {
-		// 			$("#people").empty();
-		// 			$.each(people, function(clientid, name) {
-		// 				$('#people').append("<li>" + name + "</li>");
-		// 			});
-		// 		}
-		// 	});
-
-		// 	socket.on("chat", function(who, msg){
-		// 		if(ready) {
-		// 			$("#msgs").append("<li><strong><span class='text-success'>" + who + "</span></strong> says: " + msg + "</li>");
-		// 		}
-		// 	});
-
-		// 	socket.on("disconnect", function(){
-		// 		$("#msgs").append("<li><strong><span class='text-warning'>The server is not available</span></strong></li>");
-		// 		$("#msg").attr("disabled", "disabled");
-		// 		$("#send").attr("disabled", "disabled");
-		// 	});
-
-
-		// 	$("#send").click(function(){
-		// 		var msg = $("#msg").val();
-		// 		socket.emit("send", msg);
-		// 		$("#msg").val("");
-		// 	});
-
-		// 	$("#msg").keypress(function(e){
-		// 		if(e.which == 13) {
-		// 			var msg = $("#msg").val();
-		// 			socket.emit("send", msg);
-		// 			$("#msg").val("");
-		// 		}
-		// 	});
-
-		// });
 	</script>
 </html>

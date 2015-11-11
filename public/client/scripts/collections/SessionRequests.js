@@ -1,4 +1,4 @@
-var Messages = Backbone.Collection.extend({
+var SessionRequests = Backbone.Collection.extend({
 
   model: Message,
 

@@ -1,11 +1,13 @@
-var App = Backbone.Model.extend({
-
-  defaults: {
-    username: "No username provided | Anonymous",
-    publicKey: "No Public Key Provided",
-    privateKey: "No Private Key Provided"
-  },
-
-  initialize: function() {},
+var AppModel = Backbone.Model.extend({
   
+
+
+  initialize: function(params) {
+    // this.set("library", new Songs());
+    // var MessagesCollection = new Messages();
+    // var newMessagesView = new MessagesView({collection:MessagesCollection});
+    this.set('MessagesCollection', new Messages());
+    this.set('UsersCollection', new Users());
+  }
+
 });

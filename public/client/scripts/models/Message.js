@@ -1,7 +1,8 @@
 var Message = Backbone.Model.extend({
 
   defaults: {
-    user:{name:undefined,publicKey:"Uknown"},
+    destination_socketid:"uknown socketid",
+    username:"Unknown Username...this is wierd..",
     message: "No provided Message"
   },
 

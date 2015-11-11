@@ -1,4 +1,4 @@
-var User = Backbone.Model.extend({
+var LocalUser = Backbone.Model.extend({
 
   defaults: {
     username: "No username provided | Anonymous",
@@ -8,16 +8,8 @@ var User = Backbone.Model.extend({
     session:false
   },
 
-  initCommSession:function(){
-
-    console.log("Socket request made with : ",this.attributes);
-    socket.emit("requestSession",this.attributes);
-  },
-
-
   initialize: function() {
-    console.log("NEW USER ISNNSDASD",this)
-
+    console.log("New local user succesfully instantiated",this)
   },
   
 });

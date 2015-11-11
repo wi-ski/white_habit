@@ -1,10 +1,7 @@
-var MessageView = Backbone.View.extend({
-  el: '#app',
-
-
-  template: _.template('<blockquote>\
+var Message_View = Backbone.View.extend({
+  template: _.template('<blockquote class="<%= username === window.local ? "blockquote-reverse" : ""  %>">\
                           <p class="messageContent"><%= message %></p>\
-                          <footer><%= user.name || "Uknown" %><cite title="Source Title"><%= user.username || user.publicKey %></cite></footer>\
+                          <footer><%= username || "Uknown" %><cite title="Source Title"></cite></footer>\
                         </blockquote>'
                         ),
 

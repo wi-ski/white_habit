@@ -1,13 +1,31 @@
-var User = Backbone.View.extend({
-  el: '#app',
+var UserView = Backbone.View.extend({
+  template: _.template('<li class="list-group-item" data-uname="<%= username %>" data-pKey="<%= publicKey %>"> \
+                          <span class="label label-<%= (session) ? "success":"default" %> label-as-badge"><%= (session) ? "Session":"No Session" %></span> \
+                            <%= username %> \
+                        </li>'
+                      ),
+  events:{
+    "click span": this.test
+  },
+
+  test: function() {
+    this.model.initCommSession();
+  },
+
 
   initialize: function() {
-    // this.set('messages', new messagesView({collection: Messages}));
-    // this.render();
+
+  },
+
+  expand: function(){
+
+
   },
 
   render: function() {
-    this.get('messages').render();
+    return this.template(this.model.attributes);
   }
 
 });
+
+
